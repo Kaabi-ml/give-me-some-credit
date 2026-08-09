@@ -6,7 +6,7 @@ from sklearn.pipeline import make_pipeline
 
 from src.features import get_features
 
-filtered_dg = pd.read_csv("/Users/aminkaabi/Downloads/filtered_dg.csv")
+filtered_dg = pd.read_csv("filtered_dg.csv")
 
 X, y = get_features(filtered_dg, "SeriousDlqin2yrs")
 # model without balanced
@@ -65,5 +65,5 @@ print("Coef shape:", model_b.named_steps["logisticregression"].coef_.shape)
 import joblib
 
 model_b = train_model_b(X_train, y_train)
-joblib.dump(model_b, "/Users/aminkaabi/Downloads/model_b.joblib")
+joblib.dump(model_b, "model_b.joblib")
 print("Model saved to Downloads")
