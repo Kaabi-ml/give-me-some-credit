@@ -4,7 +4,7 @@ from src.features import get_features
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score
 
-path = "/Users/aminkaabi/Downloads/filtered_dg.csv"
+path = "filtered_dg.csv"
 filtered_dg = pd.read_csv(path)
 
 

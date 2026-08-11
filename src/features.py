@@ -1,7 +1,7 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
-filtered_dg = pd.read_csv("/Users/aminkaabi/Downloads/filtered_dg.csv")
-filtered_di = pd.read_csv("/Users/aminkaabi/Downloads/filtered_di.csv")
+filtered_dg = pd.read_csv("filtered_dg.csv")
+filtered_di = pd.read_csv("filtered_di.csv")
 
 target_col = "SeriousDlqin2yrs"
 
