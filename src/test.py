@@ -4,7 +4,7 @@ from src.features import get_features
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score
 
-path = "filtered_dg.csv"
+path = "/Users/aminkaabi/Downloads/filtered_dg.csv"
 filtered_dg = pd.read_csv(path)
 
 
@@ -42,7 +42,7 @@ proba_train = model_b.predict_proba(X_train)[:, 1]
 proba_val = model_b.predict_proba(X_test)[:, 1]
 
 auc_train = roc_auc_score(y_train, proba_train)
-auc_val = roc_auc_score(y_test, proba_val)
+auc_val = roc_auc_score(y_train, proba_val)
 print("verification overfitting:")
 print("AUC train :", auc_train)
 print("AUC validation :", auc_val)

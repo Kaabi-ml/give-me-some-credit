@@ -2,8 +2,8 @@ import pandas as pd
 import joblib
 from src.features import get_features, get_preds_features
 
-path = "filtered_di.csv"
-output_path = "submission.csv"
+path = "/Users/aminkaabi/Downloads/filtered_di.csv"
+output_path = "/Users/aminkaabi/Downloads/submission.csv"
 
 df = pd.read_csv(path)
 df = df.drop(columns=["Unnamed: 0"], errors="ignore")
@@ -12,7 +12,7 @@ X, y = get_features(df, "SeriousDlqin2yrs")
 X_test_final = get_preds_features(df)
 
 # chargement du modèle déjà entraîné
-model_b = joblib.load("model_b.joblib")
+model_b = joblib.load("/Users/aminkaabi/Downloads/model_b.joblib")
 
 # prédiction des probabilités
 probs = model_b.predict_proba(X_test_final)[:, 1]
@@ -30,7 +30,7 @@ submission.to_csv(output_path, index=False)
 
 print("submission.csv créé avec succès")
 
-sample = pd.read_csv("sampleEntry.csv")
+sample = pd.read_csv("/Users/aminkaabi/Downloads/GiveMeSomeCredit/sampleEntry.csv")
 submission = pd.read_csv(output_path)
 
 
