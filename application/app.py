@@ -1,10 +1,9 @@
 import streamlit as st
-import pickle
+import joblib
 import numpy as np
 
 # Charger le modèle
-with open('/Users/aminkaabi/Downloads/model_b.joblib', 'rb') as f:
-    model = pickle.load(f)
+model = joblib.load("/Users/aminkaabi/PycharmProjects/give-me-some-credit/model.pkl")
 
 # Interface
 st.title("🏦 Credit Risk Scoring Tool")
