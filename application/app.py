@@ -3,7 +3,7 @@ import joblib
 import numpy as np
 
 # Charger le modèle
-model = joblib.load("/Users/aminkaabi/PycharmProjects/give-me-some-credit/model.pkl")
+model = joblib.load("model.pkl")
 
 # Interface
 st.title("🏦 Credit Risk Scoring Tool")
