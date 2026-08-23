@@ -22,6 +22,9 @@ late_90 = st.sidebar.number_input("Late Payments 90+ days", 0, 10, 0)
 real_estate = st.sidebar.number_input("Number of Real Estate Loans", 0, 10, 0)
 revolving = st.sidebar.slider("Revolving Utilization Rate (%)", 0, 100, 20)
 
+
+best_threshold = 0.471
+
 if st.button("Assess Credit Risk"):
     features = np.array([[revolving/100, age, late_30,
                           debt_ratio/100, monthly_income,
@@ -37,12 +40,10 @@ if st.button("Assess Credit Risk"):
     with col1:
         st.metric("Default Probability", f"{proba:.1%}")
     with col2:
-        if proba < 0.3:
-            st.success("✅ LOW RISK")
-        elif proba < 0.6:
-            st.warning("⚠️ MODERATE RISK")
+        if proba >= best_threshold:
+            st.error("⚠️ ELEVATED RISK")
         else:
-            st.error("❌ HIGH RISK")
+            st.success("✅ LOWER RISK")
 
     # Gauge visuelle
     st.progress(float(proba))
