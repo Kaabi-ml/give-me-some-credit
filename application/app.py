@@ -6,7 +6,7 @@ import numpy as np
 model = joblib.load("model.pkl")
 
 # Interface
-st.title("🏦 Credit Risk Scoring Tool")
+st.title("Credit Risk Scoring Tool")
 st.write("Assess the default risk of a borrower based on financial profile.")
 
 st.sidebar.header("Client Information")
@@ -24,6 +24,47 @@ revolving = st.sidebar.slider("Revolving Utilization Rate (%)", 0, 100, 20)
 
 
 best_threshold = 0.471
+st.markdown("""
+<style>
+.risk-circle {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: conic-gradient(
+        #4CAF50 var(--percentage),
+        #2b2f3a var(--percentage)
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+}
+
+.risk-circle::before {
+    content: "";
+    position: absolute;
+    width: 145px;
+    height: 145px;
+    background: #0e1117;
+    border-radius: 50%;
+}
+
+.risk-text {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+}
+
+.risk-text strong {
+    display: block;
+    font-size: 32px;
+}
+
+.risk-text span {
+    font-size: 13px;
+}
+</style>
+""", unsafe_allow_html=True)
 
 if st.button("Assess Credit Risk"):
     features = np.array([[revolving/100, age, late_30,
@@ -38,7 +79,20 @@ if st.button("Assess Credit Risk"):
 
     col1, col2 = st.columns(2)
     with col1:
-        st.metric("Default Probability", f"{proba:.1%}")
+        percentage = proba * 100
+
+        st.markdown(
+            f"""
+            <div class="risk-circle"
+                 style="--percentage: {percentage}%;">
+                <div class="risk-text">
+                    <strong>{percentage:.1f}%</strong>
+                    <span>Default probability</span>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
     with col2:
         if proba >= best_threshold:
             st.error("⚠️ ELEVATED RISK")
@@ -48,3 +102,5 @@ if st.button("Assess Credit Risk"):
     # Gauge visuelle
     st.progress(float(proba))
     st.caption(f"Probability of serious delinquency in next 2 years : {proba:.1%}")
+
+#graphiques
