@@ -1,6 +1,9 @@
 import streamlit as st
 import joblib
 import numpy as np
+import shap
+
+
 
 # Charger le modèle
 model = joblib.load("model.pkl")
@@ -21,6 +24,19 @@ late_60 = st.sidebar.number_input("Late Payments 60-89 days", 0, 10, 0)
 late_90 = st.sidebar.number_input("Late Payments 90+ days", 0, 10, 0)
 real_estate = st.sidebar.number_input("Number of Real Estate Loans", 0, 10, 0)
 revolving = st.sidebar.slider("Revolving Utilization Rate (%)", 0, 100, 20)
+
+feature_names = [
+    "Revolving Utilization",
+    "Age",
+    "Late Payments (30–59 days)",
+    "Debt Ratio",
+    "Monthly Income",
+    "Open Credit Lines",
+    "Late Payments (90+ days)",
+    "Real Estate Loans",
+    "Late Payments (60–89 days)",
+    "Dependents"
+]
 
 
 best_threshold = 0.471
@@ -66,6 +82,22 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+background = joblib.load("shap_background.pkl")
+
+outer_pipeline = model
+inner_pipeline = model.named_steps["model"]
+
+scaler = inner_pipeline.named_steps["standardscaler"]
+logreg = inner_pipeline.named_steps["logisticregression"]
+
+background_scaled = scaler.transform(background)
+
+explainer = shap.LinearExplainer(
+    logreg,
+    background_scaled
+)
+
+
 if st.button("Assess Credit Risk"):
     features = np.array([[revolving/100, age, late_30,
                           debt_ratio/100, monthly_income,
@@ -77,7 +109,7 @@ if st.button("Assess Credit Risk"):
     st.markdown("---")
     st.subheader("Risk Assessment Result")
 
-    col1, col2 = st.columns(2)
+    col1, col2= st.columns(2)
     with col1:
         percentage = proba * 100
 
@@ -103,4 +135,49 @@ if st.button("Assess Credit Risk"):
     st.progress(float(proba))
     st.caption(f"Probability of serious delinquency in next 2 years : {proba:.1%}")
 
-#graphiques
+
+
+    # risks factors :
+    # a. shap calcul
+    features_scaled = scaler.transform(features)
+    shap_values = explainer(features_scaled)
+
+    contributions = shap_values.values[0]
+
+    features_scaled = scaler.transform(features)
+
+    # b.Interface
+
+    st.markdown("---")
+
+    st.subheader("Why this prediction?")
+    st.caption(
+        "SHAP shows which features contributed most to this individual prediction."
+    )
+
+    importance = sorted(
+        zip(feature_names, contributions),
+        key=lambda x: abs(x[1]),
+        reverse=True
+    )
+
+
+
+    col_risk, col_protective = st.columns(2)
+
+    positive = [(n, c) for n, c in importance if c > 0][:3]
+    negative = [(n, c) for n, c in importance if c < 0][:3]
+
+    with col_risk:
+        st.markdown("#### 🔴 Factors increasing risk")
+
+        for name, contribution in positive:
+            st.write(f"**{name}**")
+            st.caption(f"+{contribution:.3f}")
+
+    with col_protective:
+        st.markdown("#### 🟢 Factors reducing risk")
+
+        for name, contribution in negative:
+            st.write(f"**{name}**")
+            st.caption(f"{contribution:.3f}")
