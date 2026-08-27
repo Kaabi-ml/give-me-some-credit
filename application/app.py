@@ -7,6 +7,7 @@ import shap
 
 # Charger le modèle
 model = joblib.load("model.pkl")
+thresholds = joblib.load("feature_thresholds.pkl")
 
 # Interface
 st.title("Credit Risk Scoring Tool")
@@ -100,24 +101,65 @@ explainer = shap.LinearExplainer(
 
 def get_level(name, value):
 
+    # Late payments → presence/absence is more meaningful than Low/High
     if name == "Late Payments (30–59 days)":
         return "None" if value == 0 else "Present"
 
-    if name == "Late Payments (60–89 days)":
+    elif name == "Late Payments (60–89 days)":
         return "None" if value == 0 else "Present"
 
-    if name == "Late Payments (90+ days)":
+    elif name == "Late Payments (90+ days)":
         return "None" if value == 0 else "Present"
 
-    if name == "Debt Ratio":
-        if value < 0.25:
+    # Debt Ratio → percentage
+    elif name == "Debt Ratio":
+        if value < 25:
             return "Low"
-        elif value < 0.75:
+        elif value < 75:
             return "Moderate"
         else:
             return "High"
 
-    # autres variables...
+    # Revolving Utilization → percentage
+    elif name == "Revolving Utilization":
+        if value < 25:
+            return "Low"
+        elif value < 75:
+            return "Moderate"
+        else:
+            return "High"
+
+    # Monthly Income → use training-set quartiles
+    elif name == "Monthly Income":
+        if value < thresholds["MonthlyIncome"]["low"]:
+            return "Low"
+        elif value > thresholds["MonthlyIncome"]["high"]:
+            return "High"
+        else:
+            return "Moderate"
+
+    # Age → display the age, no risk level
+    elif name == "Age":
+        return f"{int(value)} years"
+
+    # Number of open credit lines
+    elif name == "Open Credit Lines":
+        if value < thresholds["NumberOfOpenCreditLinesAndLoans"]["low"]:
+            return "Low"
+        elif value > thresholds["NumberOfOpenCreditLinesAndLoans"]["high"]:
+            return "High"
+        else:
+            return "Moderate"
+
+    # Real estate loans → number is more meaningful
+    elif name == "Real Estate Loans":
+        return f"{int(value)} loans"
+
+    # Dependents → number is more meaningful
+    elif name == "Dependents":
+        return f"{int(value)} dependents"
+
+    return "Unknown"
 
 if st.button("Assess Credit Risk"):
     features = np.array([[revolving/100, age, late_30,
