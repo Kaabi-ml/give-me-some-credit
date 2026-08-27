@@ -1,6 +1,5 @@
-# give-me-some-credit
 # Give Me Some Credit
-
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://give-me-some-credit-4lavdfwscb8yfjjnpidjvc.streamlit.app/)
 ## Project Overview
 
 This project aims to predict the probability that a borrower will experience
@@ -84,6 +83,21 @@ The final submission file contains two columns:
 The Probability column contains the predicted probability of serious delinquency.
 Repository Structure
 
+## Streamlit Application
+
+The final model is integrated into an interactive Streamlit application.
+
+The interface provides:
+
+1. Borrower profile inputs
+2. Predicted default probability
+3. Risk classification
+4. Key factors influencing the prediction
+5. SHAP-based model explanation
+
+## Application Preview
+![Credit Risk Application](screenshots/screen1.png) ![Credit Risk Application](screenshots/screen2.png) ![Credit Risk Application](screenshots/screen3.png)
+
 ## Repository Structure
 ```bash
 give-me-some-credit/
@@ -102,5 +116,6 @@ numpy
 scikit-learn
 joblib
 jupyter
+shap
 ```
 
