@@ -14,6 +14,7 @@ st.write("Assess the default risk of a borrower based on financial profile.")
 
 st.sidebar.header("Client Information")
 
+
 age = st.sidebar.slider("Age", 18, 80, 35)
 debt_ratio = st.sidebar.slider("Debt Ratio (%)", 0, 100, 30)
 monthly_income = st.sidebar.number_input("Monthly Income ($)", 0, 50000, 5000)
@@ -97,21 +98,45 @@ explainer = shap.LinearExplainer(
     background_scaled
 )
 
-thresholds = joblib.load("feature_thresholds.pkl")
-value = debt_ratio
+def get_level(name, value):
 
-if value < thresholds["DebtRatio"]["low"]:
-    level = "Low"
-elif value > thresholds["DebtRatio"]["high"]:
-    level = "High"
-else:
-    level = "Moderate"
+    if name == "Late Payments (30–59 days)":
+        return "None" if value == 0 else "Present"
+
+    if name == "Late Payments (60–89 days)":
+        return "None" if value == 0 else "Present"
+
+    if name == "Late Payments (90+ days)":
+        return "None" if value == 0 else "Present"
+
+    if name == "Debt Ratio":
+        if value < 0.25:
+            return "Low"
+        elif value < 0.75:
+            return "Moderate"
+        else:
+            return "High"
+
+    # autres variables...
 
 if st.button("Assess Credit Risk"):
     features = np.array([[revolving/100, age, late_30,
                           debt_ratio/100, monthly_income,
                           nb_credits, late_90, real_estate,
                           late_60, nb_dependents]])
+
+    feature_values = [
+        revolving,
+        age,
+        late_30,
+        debt_ratio,
+        monthly_income,
+        nb_credits,
+        late_90,
+        real_estate,
+        late_60,
+        nb_dependents
+    ]
 
     proba = model.predict_proba(features)[0][1]
 
@@ -181,12 +206,24 @@ if st.button("Assess Credit Risk"):
         st.markdown("#### 🔴 Factors increasing risk")
 
         for name, contribution in positive:
+            index = feature_names.index(name)
+            value = feature_values[index]
+            level = get_level(name, value)
+
             st.write(f"**{name}**")
-            st.caption(f"+{contribution:.3f} {level}")
+            st.caption(
+                f"{value} · {level} · ↑ Increases risk (+{contribution:.3f})"
+            )
 
     with col_protective:
         st.markdown("#### 🟢 Factors reducing risk")
 
         for name, contribution in negative:
+            index = feature_names.index(name)
+            value = feature_values[index]
+            level = get_level(name, value)
+
             st.write(f"**{name}**")
-            st.caption(f"{contribution:.3f} {level}")
+            st.caption(
+                f"{value} · {level} · ↓ Reduces risk ({contribution:.3f})"
+            )
