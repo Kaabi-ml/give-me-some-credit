@@ -101,7 +101,6 @@ explainer = shap.LinearExplainer(
 
 def get_level(name, value):
 
-    # Late payments → presence/absence is more meaningful than Low/High
     if name == "Late Payments (30–59 days)":
         return "None" if value == 0 else "Present"
 
@@ -111,7 +110,6 @@ def get_level(name, value):
     elif name == "Late Payments (90+ days)":
         return "None" if value == 0 else "Present"
 
-    # Debt Ratio → percentage
     elif name == "Debt Ratio":
         if value < 25:
             return "Low"
@@ -120,7 +118,6 @@ def get_level(name, value):
         else:
             return "High"
 
-    # Revolving Utilization → percentage
     elif name == "Revolving Utilization":
         if value < 25:
             return "Low"
@@ -129,33 +126,23 @@ def get_level(name, value):
         else:
             return "High"
 
-    # Monthly Income → use training-set quartiles
     elif name == "Monthly Income":
-        if value < thresholds["MonthlyIncome"]["low"]:
+        if value < 2000:
             return "Low"
-        elif value > thresholds["MonthlyIncome"]["high"]:
-            return "High"
-        else:
+        elif value < 5000:
             return "Moderate"
+        else:
+            return "High"
 
-    # Age → display the age, no risk level
     elif name == "Age":
         return f"{int(value)} years"
 
-    # Number of open credit lines
     elif name == "Open Credit Lines":
-        if value < thresholds["NumberOfOpenCreditLinesAndLoans"]["low"]:
-            return "Low"
-        elif value > thresholds["NumberOfOpenCreditLinesAndLoans"]["high"]:
-            return "High"
-        else:
-            return "Moderate"
+        return f"{int(value)} lines"
 
-    # Real estate loans → number is more meaningful
     elif name == "Real Estate Loans":
         return f"{int(value)} loans"
 
-    # Dependents → number is more meaningful
     elif name == "Dependents":
         return f"{int(value)} dependents"
 
