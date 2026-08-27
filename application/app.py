@@ -97,6 +97,15 @@ explainer = shap.LinearExplainer(
     background_scaled
 )
 
+thresholds = joblib.load("feature_thresholds.pkl")
+value = debt_ratio
+
+if value < thresholds["DebtRatio"]["low"]:
+    level = "Low"
+elif value > thresholds["DebtRatio"]["high"]:
+    level = "High"
+else:
+    level = "Moderate"
 
 if st.button("Assess Credit Risk"):
     features = np.array([[revolving/100, age, late_30,
@@ -173,11 +182,11 @@ if st.button("Assess Credit Risk"):
 
         for name, contribution in positive:
             st.write(f"**{name}**")
-            st.caption(f"+{contribution:.3f}")
+            st.caption(f"+{contribution:.3f} {level}")
 
     with col_protective:
         st.markdown("#### 🟢 Factors reducing risk")
 
         for name, contribution in negative:
             st.write(f"**{name}**")
-            st.caption(f"{contribution:.3f}")
+            st.caption(f"{contribution:.3f} {level}")
