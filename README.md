@@ -1,5 +1,5 @@
 # Give Me Some Credit
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://give-me-some-credit-4lavdfwscb8yfjjnpidjvc.streamlit.app/)
+Live demo : [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://give-me-some-credit.streamlit.app/)
 ## Project Overview
 
 This project aims to predict the probability that a borrower will experience
